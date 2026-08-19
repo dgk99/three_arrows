@@ -187,4 +187,38 @@ export class PgEntryRepository implements EntryRepository {
     await this.pool.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
     return this.getEntryById(entryId)
   }
+
+  async addPhoto(entryId: string, params: { url: string }): Promise<Entry | undefined> {
+    const entry = await this.getEntryById(entryId)
+    if (!entry) return undefined
+    await this.pool.query(`INSERT INTO photos (entry_id, url) VALUES ($1, $2)`, [entryId, params.url])
+    await this.pool.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
+    return this.getEntryById(entryId)
+  }
+
+  async deletePhoto(entryId: string, photoId: string): Promise<Entry | undefined> {
+    await this.pool.query(`DELETE FROM photos WHERE id = $1 AND entry_id = $2`, [photoId, entryId])
+    await this.pool.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
+    return this.getEntryById(entryId)
+  }
+
+  async addAttachment(
+    entryId: string,
+    params: { fileName: string; url: string; fileType: string }
+  ): Promise<Entry | undefined> {
+    const entry = await this.getEntryById(entryId)
+    if (!entry) return undefined
+    await this.pool.query(
+      `INSERT INTO attachments (entry_id, file_name, url, file_type) VALUES ($1, $2, $3, $4)`,
+      [entryId, params.fileName, params.url, params.fileType]
+    )
+    await this.pool.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
+    return this.getEntryById(entryId)
+  }
+
+  async deleteAttachment(entryId: string, attachmentId: string): Promise<Entry | undefined> {
+    await this.pool.query(`DELETE FROM attachments WHERE id = $1 AND entry_id = $2`, [attachmentId, entryId])
+    await this.pool.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
+    return this.getEntryById(entryId)
+  }
 }

@@ -19,7 +19,6 @@
     "memoPlaceholder": "メモを追加",
     "add": "追加",
     "delete": "削除",
-    "previewNote": "プレビュー専用 — 再読み込みすると消えます（実際の保存は今後対応予定）。",
     "deleteEntry": "項目を削除",
     "confirmDeleteEntry": "この項目を削除しますか？"
   },

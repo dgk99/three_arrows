@@ -147,14 +147,20 @@ export function EntryDetailPanel({ entryId, onClose, onChanged }: Props) {
 
           <section className="entry-detail-section">
             <h3>{t("entryDetail.photosHeading")}</h3>
-            <PhotoPreviewUploader />
-            <p className="entry-detail-note">{t("entryDetail.previewNote")}</p>
+            <PhotoPreviewUploader
+              entryId={entry.id}
+              photos={entry.photos}
+              onChange={(photos) => setEntry({ ...entry, photos })}
+            />
           </section>
 
           <section className="entry-detail-section">
             <h3>{t("entryDetail.attachmentsHeading")}</h3>
-            <FilePreviewUploader />
-            <p className="entry-detail-note">{t("entryDetail.previewNote")}</p>
+            <FilePreviewUploader
+              entryId={entry.id}
+              attachments={entry.attachments}
+              onChange={(attachments) => setEntry({ ...entry, attachments })}
+            />
           </section>
 
           <button className="entry-detail-delete" onClick={handleDeleteEntry}>

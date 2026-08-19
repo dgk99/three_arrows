@@ -20,4 +20,13 @@ export interface EntryRepository {
     patch: { label?: string; date?: string | null; done?: boolean }
   ): Promise<Entry | undefined>
   deleteStage(entryId: string, stageId: string): Promise<Entry | undefined>
+
+  addPhoto(entryId: string, params: { url: string }): Promise<Entry | undefined>
+  deletePhoto(entryId: string, photoId: string): Promise<Entry | undefined>
+
+  addAttachment(
+    entryId: string,
+    params: { fileName: string; url: string; fileType: string }
+  ): Promise<Entry | undefined>
+  deleteAttachment(entryId: string, attachmentId: string): Promise<Entry | undefined>
 }

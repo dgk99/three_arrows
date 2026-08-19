@@ -19,7 +19,6 @@
     "memoPlaceholder": "메모 추가",
     "add": "추가",
     "delete": "삭제",
-    "previewNote": "미리보기 전용 — 새로고침하면 사라집니다 (실제 저장은 추후 연동 예정).",
     "deleteEntry": "항목 삭제",
     "confirmDeleteEntry": "이 항목을 삭제할까요?"
   },
