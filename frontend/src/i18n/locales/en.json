@@ -19,7 +19,6 @@
     "memoPlaceholder": "Add a memo",
     "add": "Add",
     "delete": "Delete",
-    "previewNote": "Preview only — this disappears on refresh (real storage is coming later).",
     "deleteEntry": "Delete item",
     "confirmDeleteEntry": "Delete this item?"
   },

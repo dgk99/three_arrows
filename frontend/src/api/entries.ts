@@ -1,6 +1,11 @@
 import type { Entry } from "../types/entry"
 
 const BASE_URL = import.meta.env.VITE_API_URL
+const ORIGIN = BASE_URL.replace(/\/api\/?$/, "")
+
+export function resolveAssetUrl(url: string): string {
+  return `${ORIGIN}${url}`
+}
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -9,6 +14,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   })
   if (!res.ok) throw new Error(`API error ${res.status}: ${await res.text()}`)
   if (res.status === 204) return undefined as T
+  return res.json()
+}
+
+async function upload<T>(path: string, file: File, fieldName: string): Promise<T> {
+  const formData = new FormData()
+  formData.append(fieldName, file)
+  const res = await fetch(`${BASE_URL}${path}`, { method: "POST", body: formData })
+  if (!res.ok) throw new Error(`API error ${res.status}: ${await res.text()}`)
   return res.json()
 }
 
@@ -53,4 +66,15 @@ export const entriesApi = {
 
   deleteStage: (entryId: string, stageId: string) =>
     request<Entry>(`/entries/${entryId}/stages/${stageId}`, { method: "DELETE" }),
+
+  addPhoto: (entryId: string, file: File) => upload<Entry>(`/entries/${entryId}/photos`, file, "photo"),
+
+  deletePhoto: (entryId: string, photoId: string) =>
+    request<Entry>(`/entries/${entryId}/photos/${photoId}`, { method: "DELETE" }),
+
+  addAttachment: (entryId: string, file: File) =>
+    upload<Entry>(`/entries/${entryId}/attachments`, file, "file"),
+
+  deleteAttachment: (entryId: string, attachmentId: string) =>
+    request<Entry>(`/entries/${entryId}/attachments/${attachmentId}`, { method: "DELETE" }),
 }

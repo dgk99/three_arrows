@@ -1,69 +1,55 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import type { ChangeEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { entriesApi, resolveAssetUrl } from "../api/entries"
+import type { Attachment } from "../types/entry"
 import "./FilePreviewUploader.css"
 
-interface LocalFile {
-  id: string
-  url: string
-  name: string
-  size: number
+interface Props {
+  entryId: string
+  attachments: Attachment[]
+  onChange: (attachments: Attachment[]) => void
 }
 
-function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes}B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`
-  return `${(bytes / 1024 / 1024).toFixed(1)}MB`
-}
-
-export function FilePreviewUploader() {
+export function FilePreviewUploader({ entryId, attachments, onChange }: Props) {
   const { t } = useTranslation()
-  const [files, setFiles] = useState<LocalFile[]>([])
+  const [uploading, setUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    return () => {
-      files.forEach((f) => URL.revokeObjectURL(f.url))
+  async function handleFiles(e: ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+    setUploading(true)
+    try {
+      for (const file of Array.from(files)) {
+        const updated = await entriesApi.addAttachment(entryId, file)
+        onChange(updated.attachments)
+      }
+    } finally {
+      setUploading(false)
+      e.target.value = ""
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  function handleFiles(e: ChangeEvent<HTMLInputElement>) {
-    const list = e.target.files
-    if (!list) return
-    const added = Array.from(list).map((file) => ({
-      id: crypto.randomUUID(),
-      url: URL.createObjectURL(file),
-      name: file.name,
-      size: file.size,
-    }))
-    setFiles((prev) => [...prev, ...added])
-    e.target.value = ""
   }
 
-  function remove(id: string) {
-    setFiles((prev) => {
-      const target = prev.find((f) => f.id === id)
-      if (target) URL.revokeObjectURL(target.url)
-      return prev.filter((f) => f.id !== id)
-    })
+  async function remove(attachmentId: string) {
+    const updated = await entriesApi.deleteAttachment(entryId, attachmentId)
+    onChange(updated.attachments)
   }
 
   return (
     <div className="file-uploader">
       <ul className="file-list">
-        {files.map((f) => (
-          <li key={f.id} className="file-item">
-            <a href={f.url} target="_blank" rel="noreferrer">
-              {f.name}
+        {attachments.map((a) => (
+          <li key={a.id} className="file-item">
+            <a href={resolveAssetUrl(a.url)} target="_blank" rel="noreferrer">
+              {a.fileName}
             </a>
-            <span className="file-size">{formatSize(f.size)}</span>
-            <button onClick={() => remove(f.id)}>{t("file.delete")}</button>
+            <button onClick={() => remove(a.id)}>{t("file.delete")}</button>
           </li>
         ))}
       </ul>
-      <button className="file-add-trigger" onClick={() => inputRef.current?.click()}>
-        {t("file.addTrigger")}
+      <button className="file-add-trigger" onClick={() => inputRef.current?.click()} disabled={uploading}>
+        {uploading ? "…" : t("file.addTrigger")}
       </button>
       <input ref={inputRef} type="file" multiple hidden onChange={handleFiles} />
     </div>
