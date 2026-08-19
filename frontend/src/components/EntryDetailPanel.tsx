@@ -1,0 +1,167 @@
+import { useEffect, useState } from "react"
+import type { FormEvent } from "react"
+import { useTranslation } from "react-i18next"
+import { entriesApi } from "../api/entries"
+import type { Entry } from "../types/entry"
+import { FilePreviewUploader } from "./FilePreviewUploader"
+import { PhotoPreviewUploader } from "./PhotoPreviewUploader"
+import { ProgressTimeline } from "./ProgressTimeline"
+import "./EntryDetailPanel.css"
+
+interface Props {
+  entryId: string
+  onClose: () => void
+  onChanged: () => void
+}
+
+export function EntryDetailPanel({ entryId, onClose, onChanged }: Props) {
+  const { t } = useTranslation()
+  const [entry, setEntry] = useState<Entry | null>(null)
+  const [title, setTitle] = useState("")
+  const [newMemo, setNewMemo] = useState("")
+
+  useEffect(() => {
+    let cancelled = false
+    entriesApi.getEntryById(entryId).then((data) => {
+      if (cancelled) return
+      setEntry(data)
+      setTitle(data.title)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [entryId])
+
+  async function saveTitle() {
+    if (!entry || title === entry.title) return
+    const updated = await entriesApi.updateEntry(entry.id, { title })
+    setEntry(updated)
+    onChanged()
+  }
+
+  async function handleAddMemo(e: FormEvent) {
+    e.preventDefault()
+    if (!entry || !newMemo.trim()) return
+    const updated = await entriesApi.addMemoLine(entry.id, newMemo.trim())
+    setEntry(updated)
+    setNewMemo("")
+  }
+
+  async function handleUpdateMemo(lineId: string, text: string) {
+    if (!entry) return
+    const updated = await entriesApi.updateMemoLine(entry.id, lineId, text)
+    setEntry(updated)
+  }
+
+  async function handleDeleteMemo(lineId: string) {
+    if (!entry) return
+    const updated = await entriesApi.deleteMemoLine(entry.id, lineId)
+    setEntry(updated)
+  }
+
+  async function handleToggleStageDone(stageId: string, done: boolean) {
+    if (!entry) return
+    const updated = await entriesApi.updateStage(entry.id, stageId, { done })
+    setEntry(updated)
+    onChanged()
+  }
+
+  async function handleUpdateStage(stageId: string, patch: { label?: string; date?: string | null }) {
+    if (!entry) return
+    const updated = await entriesApi.updateStage(entry.id, stageId, patch)
+    setEntry(updated)
+  }
+
+  async function handleDeleteStage(stageId: string) {
+    if (!entry) return
+    const updated = await entriesApi.deleteStage(entry.id, stageId)
+    setEntry(updated)
+  }
+
+  async function handleAddStage(label: string, date: string | null) {
+    if (!entry) return
+    const updated = await entriesApi.addStage(entry.id, { label, date })
+    setEntry(updated)
+  }
+
+  async function handleDeleteEntry() {
+    if (!entry) return
+    if (!confirm(t("entryDetail.confirmDeleteEntry"))) return
+    await entriesApi.deleteEntry(entry.id)
+    onChanged()
+    onClose()
+  }
+
+  return (
+    <div className="entry-detail-panel">
+      <button className="entry-detail-close" onClick={onClose} aria-label={t("entryDetail.close")}>
+        ×
+      </button>
+
+      {!entry ? (
+        <p>{t("entryDetail.loading")}</p>
+      ) : (
+        <>
+          <input
+            className="entry-detail-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={saveTitle}
+          />
+
+          <section className="entry-detail-section">
+            <h3>{t("entryDetail.stagesHeading")}</h3>
+            <ProgressTimeline
+              stages={entry.stages}
+              onToggleDone={handleToggleStageDone}
+              onUpdateStage={handleUpdateStage}
+              onDeleteStage={handleDeleteStage}
+              onAddStage={handleAddStage}
+            />
+          </section>
+
+          <section className="entry-detail-section">
+            <h3>{t("entryDetail.memosHeading")}</h3>
+            <form className="memo-add-form" onSubmit={handleAddMemo}>
+              <input
+                value={newMemo}
+                onChange={(e) => setNewMemo(e.target.value)}
+                placeholder={t("entryDetail.memoPlaceholder")}
+              />
+              <button type="submit">{t("entryDetail.add")}</button>
+            </form>
+            <ul className="memo-list">
+              {entry.memos.map((memo) => (
+                <li key={memo.id} className="memo-item">
+                  <input
+                    defaultValue={memo.text}
+                    onBlur={(e) => e.target.value !== memo.text && handleUpdateMemo(memo.id, e.target.value)}
+                  />
+                  <button className="memo-delete" onClick={() => handleDeleteMemo(memo.id)}>
+                    {t("entryDetail.delete")}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="entry-detail-section">
+            <h3>{t("entryDetail.photosHeading")}</h3>
+            <PhotoPreviewUploader />
+            <p className="entry-detail-note">{t("entryDetail.previewNote")}</p>
+          </section>
+
+          <section className="entry-detail-section">
+            <h3>{t("entryDetail.attachmentsHeading")}</h3>
+            <FilePreviewUploader />
+            <p className="entry-detail-note">{t("entryDetail.previewNote")}</p>
+          </section>
+
+          <button className="entry-detail-delete" onClick={handleDeleteEntry}>
+            {t("entryDetail.deleteEntry")}
+          </button>
+        </>
+      )}
+    </div>
+  )
+}

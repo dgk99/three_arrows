@@ -1,0 +1,67 @@
+.entry-list-panel h2 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.entry-add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.entry-add-form input {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.entry-add-form button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.entry-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.entry-list-empty {
+  color: #999;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.entry-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.entry-list-item:hover {
+  background: #f7f7fb;
+}
+
+.entry-list-item-selected {
+  border-color: #4f46e5;
+  box-shadow: inset 0 0 0 1px #4f46e5;
+  background: #f5f4ff;
+}
+
+.entry-list-progress {
+  font-size: 0.8rem;
+  color: #4f46e5;
+  font-weight: 600;
+}

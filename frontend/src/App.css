@@ -1,0 +1,8 @@
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.app-main {
+  padding: 0 1rem 2rem;
+}

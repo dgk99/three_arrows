@@ -1,0 +1,139 @@
+.progress-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.stage-connector {
+  width: 2px;
+  height: 16px;
+  margin-left: 10px;
+  background: #ddd;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.stage-connector-done {
+  background: #4f46e5;
+}
+
+.stage-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stage-dot {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: #fff;
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage-dot:disabled {
+  cursor: default;
+}
+
+.stage-dot-done {
+  border-color: #4f46e5;
+  background: #4f46e5;
+}
+
+.stage-label {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 0.2rem 0;
+  font-size: 0.9rem;
+}
+
+.stage-label:focus {
+  outline: none;
+  border-bottom-color: #4f46e5;
+}
+
+.stage-date {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 0.15rem 0.3rem;
+  font-size: 0.75rem;
+  color: #666;
+  width: 130px;
+}
+
+.stage-delete {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  color: #c00;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0.2rem;
+}
+
+.stage-add-trigger {
+  align-self: flex-start;
+  margin-top: 0.4rem;
+  margin-left: 30px;
+  border: 1px dashed #ccc;
+  background: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.stage-add-form {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  margin-left: 30px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stage-add-form input[type="text"],
+.stage-add-form input:not([type="date"]) {
+  flex: 1;
+  min-width: 80px;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.stage-add-form input[type="date"] {
+  padding: 0.25rem 0.4rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.stage-add-form button {
+  padding: 0.3rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.stage-add-form button[type="submit"] {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.stage-add-form button[type="button"] {
+  background: #eee;
+  color: #444;
+}

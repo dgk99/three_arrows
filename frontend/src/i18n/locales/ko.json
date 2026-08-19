@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "checklist": "체크리스트",
+    "plan": "플랜"
+  },
+  "entryList": {
+    "checklistTitle": "{{date}} 할 일",
+    "addPlaceholder": "새 항목 추가",
+    "add": "추가",
+    "empty": "항목이 없습니다."
+  },
+  "entryDetail": {
+    "close": "닫기",
+    "loading": "불러오는 중...",
+    "stagesHeading": "진행 단계",
+    "memosHeading": "메모",
+    "photosHeading": "사진",
+    "attachmentsHeading": "첨부파일",
+    "memoPlaceholder": "메모 추가",
+    "add": "추가",
+    "delete": "삭제",
+    "previewNote": "미리보기 전용 — 새로고침하면 사라집니다 (실제 저장은 추후 연동 예정).",
+    "deleteEntry": "항목 삭제",
+    "confirmDeleteEntry": "이 항목을 삭제할까요?"
+  },
+  "progress": {
+    "stageNamePlaceholder": "단계 이름",
+    "add": "추가",
+    "cancel": "취소",
+    "addTrigger": "+ 단계 추가",
+    "toggleTitle": "구간 완료 표시",
+    "defaultStart": "시작",
+    "defaultEnd": "완료"
+  },
+  "photo": {
+    "delete": "사진 삭제"
+  },
+  "file": {
+    "delete": "삭제",
+    "addTrigger": "+ 파일 추가"
+  },
+  "language": {
+    "ko": "한국어",
+    "en": "English",
+    "ja": "日本語"
+  }
+}

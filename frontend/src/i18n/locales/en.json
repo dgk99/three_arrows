@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "checklist": "Checklist",
+    "plan": "Plan"
+  },
+  "entryList": {
+    "checklistTitle": "To-dos for {{date}}",
+    "addPlaceholder": "Add a new item",
+    "add": "Add",
+    "empty": "No items yet."
+  },
+  "entryDetail": {
+    "close": "Close",
+    "loading": "Loading...",
+    "stagesHeading": "Progress stages",
+    "memosHeading": "Memos",
+    "photosHeading": "Photos",
+    "attachmentsHeading": "Attachments",
+    "memoPlaceholder": "Add a memo",
+    "add": "Add",
+    "delete": "Delete",
+    "previewNote": "Preview only — this disappears on refresh (real storage is coming later).",
+    "deleteEntry": "Delete item",
+    "confirmDeleteEntry": "Delete this item?"
+  },
+  "progress": {
+    "stageNamePlaceholder": "Stage name",
+    "add": "Add",
+    "cancel": "Cancel",
+    "addTrigger": "+ Add stage",
+    "toggleTitle": "Toggle segment complete",
+    "defaultStart": "Start",
+    "defaultEnd": "Complete"
+  },
+  "photo": {
+    "delete": "Delete photo"
+  },
+  "file": {
+    "delete": "Delete",
+    "addTrigger": "+ Add file"
+  },
+  "language": {
+    "ko": "한국어",
+    "en": "English",
+    "ja": "日本語"
+  }
+}

@@ -1,0 +1,125 @@
+.entry-detail-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  border: 1px solid #e5e4e7;
+  border-radius: 10px;
+  padding: 1.25rem 1.25rem 1.5rem;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.entry-detail-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: #888;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.entry-detail-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.entry-detail-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.25rem 1.75rem 0.25rem 0;
+  width: 100%;
+}
+
+.entry-detail-title:focus {
+  outline: none;
+  border-bottom-color: #4f46e5;
+}
+
+.entry-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.entry-detail-section h3 {
+  font-size: 0.9rem;
+  color: #444;
+  margin: 0;
+}
+
+.entry-detail-note {
+  color: #999;
+  font-size: 0.72rem;
+  margin: 0;
+}
+
+.memo-add-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.memo-add-form input {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.memo-add-form button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.memo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.memo-item {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.memo-item input {
+  flex: 1;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.memo-delete {
+  background: none;
+  border: none;
+  color: #c00;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.entry-detail-delete {
+  align-self: flex-start;
+  background: none;
+  border: 1px solid #c00;
+  color: #c00;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}

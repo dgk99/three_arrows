@@ -1,0 +1,18 @@
+.checklist-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.checklist-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .checklist-bottom {
+    grid-template-columns: 1fr;
+  }
+}
