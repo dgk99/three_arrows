@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { entriesApi } from "../api/entries"
+import { AiQuickAdd } from "../components/AiQuickAdd"
 import { EntryDetailPanel } from "../components/EntryDetailPanel"
 import { EntryListPanel } from "../components/EntryListPanel"
 import { MonthCalendar } from "../components/MonthCalendar"
@@ -14,9 +15,11 @@ export function ChecklistPage() {
   const [month, setMonth] = useState(() => startOfMonth(new Date()))
   const [selectedDate, setSelectedDate] = useState(() => toDateKey(new Date()))
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
+  const [refreshTick, setRefreshTick] = useState(0)
 
   async function reload() {
     setEntries(await entriesApi.getAllEntries())
+    setRefreshTick((tick) => tick + 1)
   }
 
   useEffect(() => {
@@ -46,8 +49,19 @@ export function ChecklistPage() {
     setSelectedEntryId(null)
   }
 
+  function handleAiCreated(entries: Entry[]) {
+    reload()
+    const dated = entries.find((e) => e.scheduledDate)
+    if (dated?.scheduledDate) {
+      const [year, monthIndex] = dated.scheduledDate.split("-").map(Number)
+      setMonth(new Date(year, monthIndex - 1, 1))
+      setSelectedDate(dated.scheduledDate)
+    }
+  }
+
   return (
     <div className="checklist-page">
+      <AiQuickAdd onCreated={handleAiCreated} />
       <MonthCalendar
         month={month}
         selectedDate={selectedDate}
@@ -67,6 +81,7 @@ export function ChecklistPage() {
           {selectedEntryId && (
             <EntryDetailPanel
               entryId={selectedEntryId}
+              refreshSignal={refreshTick}
               onClose={() => setSelectedEntryId(null)}
               onChanged={reload}
             />

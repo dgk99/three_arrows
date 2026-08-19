@@ -1,4 +1,6 @@
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
+import { useContentTranslation } from "../contexts/ContentTranslationContext"
 import type { Entry } from "../types/entry"
 import { addMonths, formatMonthHeader, getMonthGrid, getWeekdayLabels, toDateKey } from "../utils/date"
 import "./MonthCalendar.css"
@@ -15,9 +17,15 @@ interface Props {
 
 export function MonthCalendar({ month, selectedDate, entriesByDate, onSelectDate, onChangeMonth }: Props) {
   const { i18n } = useTranslation()
+  const { translate, requestTexts } = useContentTranslation()
   const days = getMonthGrid(month)
   const todayKey = toDateKey(new Date())
   const weekdays = getWeekdayLabels(i18n.language)
+
+  useEffect(() => {
+    requestTexts([...entriesByDate.values()].flat().map((e) => e.title))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entriesByDate, i18n.language])
 
   return (
     <div className="calendar">
@@ -55,7 +63,7 @@ export function MonthCalendar({ month, selectedDate, entriesByDate, onSelectDate
               <span className="calendar-tags">
                 {entries.slice(0, MAX_TAGS).map((e) => (
                   <span key={e.id} className="calendar-tag">
-                    {e.title}
+                    {translate(e.title)}
                   </span>
                 ))}
                 {entries.length > MAX_TAGS && (

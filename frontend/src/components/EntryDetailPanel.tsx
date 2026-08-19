@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import type { FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { entriesApi } from "../api/entries"
+import { useContentTranslation } from "../contexts/ContentTranslationContext"
 import type { Entry } from "../types/entry"
 import { FilePreviewUploader } from "./FilePreviewUploader"
 import { PhotoPreviewUploader } from "./PhotoPreviewUploader"
@@ -10,14 +11,15 @@ import "./EntryDetailPanel.css"
 
 interface Props {
   entryId: string
+  refreshSignal?: number
   onClose: () => void
   onChanged: () => void
 }
 
-export function EntryDetailPanel({ entryId, onClose, onChanged }: Props) {
-  const { t } = useTranslation()
+export function EntryDetailPanel({ entryId, refreshSignal, onClose, onChanged }: Props) {
+  const { t, i18n } = useTranslation()
+  const { translate, requestTexts } = useContentTranslation()
   const [entry, setEntry] = useState<Entry | null>(null)
-  const [title, setTitle] = useState("")
   const [newMemo, setNewMemo] = useState("")
 
   useEffect(() => {
@@ -25,16 +27,29 @@ export function EntryDetailPanel({ entryId, onClose, onChanged }: Props) {
     entriesApi.getEntryById(entryId).then((data) => {
       if (cancelled) return
       setEntry(data)
-      setTitle(data.title)
     })
     return () => {
       cancelled = true
     }
-  }, [entryId])
+    // refreshSignal is bumped by the parent whenever entries may have changed
+    // elsewhere (e.g. the AI assistant), so this panel stays in sync without
+    // requiring the user to reselect the entry.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entryId, refreshSignal])
 
-  async function saveTitle() {
-    if (!entry || title === entry.title) return
-    const updated = await entriesApi.updateEntry(entry.id, { title })
+  useEffect(() => {
+    if (!entry) return
+    requestTexts([
+      entry.title,
+      ...entry.stages.filter((s) => !s.isDefault).map((s) => s.label),
+      ...entry.memos.map((m) => m.text),
+    ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry, i18n.language])
+
+  async function saveTitle(newTitle: string) {
+    if (!entry) return
+    const updated = await entriesApi.updateEntry(entry.id, { title: newTitle })
     setEntry(updated)
     onChanged()
   }
@@ -102,12 +117,17 @@ export function EntryDetailPanel({ entryId, onClose, onChanged }: Props) {
         <p>{t("entryDetail.loading")}</p>
       ) : (
         <>
-          <input
-            className="entry-detail-title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onBlur={saveTitle}
-          />
+          {(() => {
+            const displayTitle = translate(entry.title)
+            return (
+              <input
+                key={`title-${entry.id}-${i18n.language}-${displayTitle}`}
+                className="entry-detail-title"
+                defaultValue={displayTitle}
+                onBlur={(e) => e.target.value !== displayTitle && saveTitle(e.target.value)}
+              />
+            )
+          })()}
 
           <section className="entry-detail-section">
             <h3>{t("entryDetail.stagesHeading")}</h3>
@@ -131,17 +151,21 @@ export function EntryDetailPanel({ entryId, onClose, onChanged }: Props) {
               <button type="submit">{t("entryDetail.add")}</button>
             </form>
             <ul className="memo-list">
-              {entry.memos.map((memo) => (
-                <li key={memo.id} className="memo-item">
-                  <input
-                    defaultValue={memo.text}
-                    onBlur={(e) => e.target.value !== memo.text && handleUpdateMemo(memo.id, e.target.value)}
-                  />
-                  <button className="memo-delete" onClick={() => handleDeleteMemo(memo.id)}>
-                    {t("entryDetail.delete")}
-                  </button>
-                </li>
-              ))}
+              {entry.memos.map((memo) => {
+                const displayText = translate(memo.text)
+                return (
+                  <li key={memo.id} className="memo-item">
+                    <input
+                      key={`${memo.id}-${i18n.language}-${displayText}`}
+                      defaultValue={displayText}
+                      onBlur={(e) => e.target.value !== displayText && handleUpdateMemo(memo.id, e.target.value)}
+                    />
+                    <button className="memo-delete" onClick={() => handleDeleteMemo(memo.id)}>
+                      {t("entryDetail.delete")}
+                    </button>
+                  </li>
+                )
+              })}
             </ul>
           </section>
 

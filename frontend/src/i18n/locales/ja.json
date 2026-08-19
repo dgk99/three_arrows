@@ -39,6 +39,14 @@
     "delete": "削除",
     "addTrigger": "+ ファイルを追加"
   },
+  "aiQuickAdd": {
+    "label": "AIアシスタント",
+    "placeholder": "例: 22日の帰国の予定に段階で1,2,3,4を追加して",
+    "submit": "追加",
+    "loading": "解析中...",
+    "error": "AIの解析に失敗しました。もう一度お試しください。",
+    "success": "完了!"
+  },
   "language": {
     "ko": "한국어",
     "en": "English",

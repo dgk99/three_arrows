@@ -39,6 +39,14 @@
     "delete": "Delete",
     "addTrigger": "+ Add file"
   },
+  "aiQuickAdd": {
+    "label": "AI Assistant",
+    "placeholder": "e.g. Add stages 1, 2, 3, 4 to the return-flight entry on the 22nd",
+    "submit": "Add",
+    "loading": "Thinking...",
+    "error": "AI couldn't parse that. Please try again.",
+    "success": "Done!"
+  },
   "language": {
     "ko": "한국어",
     "en": "English",

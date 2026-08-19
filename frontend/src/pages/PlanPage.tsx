@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { entriesApi } from "../api/entries"
+import { AiQuickAdd } from "../components/AiQuickAdd"
 import { EntryDetailPanel } from "../components/EntryDetailPanel"
 import { EntryListPanel } from "../components/EntryListPanel"
 import type { Entry } from "../types/entry"
@@ -10,9 +11,11 @@ export function PlanPage() {
   const { t } = useTranslation()
   const [entries, setEntries] = useState<Entry[]>([])
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
+  const [refreshTick, setRefreshTick] = useState(0)
 
   async function reload() {
     setEntries(await entriesApi.getPlanEntries())
+    setRefreshTick((tick) => tick + 1)
   }
 
   useEffect(() => {
@@ -26,21 +29,25 @@ export function PlanPage() {
 
   return (
     <div className="plan-page">
-      <EntryListPanel
-        title={t("nav.plan")}
-        entries={entries}
-        selectedId={selectedEntryId}
-        onAdd={handleAdd}
-        onSelect={setSelectedEntryId}
-      />
-      <div className="plan-detail-slot">
-        {selectedEntryId && (
-          <EntryDetailPanel
-            entryId={selectedEntryId}
-            onClose={() => setSelectedEntryId(null)}
-            onChanged={reload}
-          />
-        )}
+      <AiQuickAdd onCreated={reload} />
+      <div className="plan-page-grid">
+        <EntryListPanel
+          title={t("nav.plan")}
+          entries={entries}
+          selectedId={selectedEntryId}
+          onAdd={handleAdd}
+          onSelect={setSelectedEntryId}
+        />
+        <div className="plan-detail-slot">
+          {selectedEntryId && (
+            <EntryDetailPanel
+              entryId={selectedEntryId}
+              refreshSignal={refreshTick}
+              onClose={() => setSelectedEntryId(null)}
+              onChanged={reload}
+            />
+          )}
+        </div>
       </div>
     </div>
   )

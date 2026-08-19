@@ -39,6 +39,14 @@
     "delete": "삭제",
     "addTrigger": "+ 파일 추가"
   },
+  "aiQuickAdd": {
+    "label": "AI 비서",
+    "placeholder": "예: 22일 귀국 일정에 단계로 1,2,3,4 추가해줘",
+    "submit": "추가",
+    "loading": "분석 중...",
+    "error": "AI 분석에 실패했어요. 다시 시도해주세요.",
+    "success": "완료!"
+  },
   "language": {
     "ko": "한국어",
     "en": "English",

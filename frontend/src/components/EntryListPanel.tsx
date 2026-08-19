@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { useContentTranslation } from "../contexts/ContentTranslationContext"
 import type { Entry } from "../types/entry"
 import { progressPercent } from "../utils/progress"
 import "./EntryListPanel.css"
@@ -14,8 +15,14 @@ interface Props {
 }
 
 export function EntryListPanel({ title, entries, selectedId, onAdd, onSelect }: Props) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const { translate, requestTexts } = useContentTranslation()
   const [newTitle, setNewTitle] = useState("")
+
+  useEffect(() => {
+    requestTexts(entries.map((e) => e.title))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entries, i18n.language])
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -46,7 +53,7 @@ export function EntryListPanel({ title, entries, selectedId, onAdd, onSelect }: 
             }
             onClick={() => onSelect(entry.id)}
           >
-            <span className="entry-list-title">{entry.title}</span>
+            <span className="entry-list-title">{translate(entry.title)}</span>
             <span className="entry-list-progress">{progressPercent(entry)}%</span>
           </li>
         ))}

@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { isProtectedStage } from "../domain/progressStages.js"
 import { EntryRepository } from "../repository/EntryRepository.js"
 
 export function createEntriesRouter(repo: EntryRepository): Router {
@@ -67,9 +68,10 @@ export function createEntriesRouter(repo: EntryRepository): Router {
   router.delete("/:id/stages/:stageId", async (req, res) => {
     const entry = await repo.getEntryById(req.params.id)
     if (!entry) return res.status(404).json({ error: "Entry not found" })
-    const index = entry.stages.findIndex((s) => s.id === req.params.stageId)
-    if (index === -1) return res.status(404).json({ error: "Stage not found" })
-    if (index === 0 || index === entry.stages.length - 1) {
+    if (!entry.stages.some((s) => s.id === req.params.stageId)) {
+      return res.status(404).json({ error: "Stage not found" })
+    }
+    if (isProtectedStage(entry.stages, req.params.stageId)) {
       return res.status(400).json({ error: "시작/완료 단계는 삭제할 수 없습니다" })
     }
     res.json(await repo.deleteStage(req.params.id, req.params.stageId))

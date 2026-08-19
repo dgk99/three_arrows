@@ -1,4 +1,4 @@
-import { Pool } from "pg"
+import { Pool, PoolClient } from "pg"
 import { Entry } from "../types/entry.js"
 import { EntryRepository } from "./EntryRepository.js"
 
@@ -108,14 +108,41 @@ export class PgEntryRepository implements EntryRepository {
     await this.pool.query(`DELETE FROM entries WHERE id = $1`, [id])
   }
 
+  // Callers (notably the AI assistant) may issue several add_* calls for the same
+  // entry concurrently. A plain read-then-write race would let them compute the
+  // same "next order" value. Serialize per-entry with a transaction-scoped
+  // advisory lock keyed on the entry id.
+  private async withEntryLock<T>(entryId: string, fn: (client: PoolClient) => Promise<T>): Promise<T> {
+    const client = await this.pool.connect()
+    try {
+      await client.query("BEGIN")
+      await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [entryId])
+      const result = await fn(client)
+      await client.query("COMMIT")
+      return result
+    } catch (err) {
+      await client.query("ROLLBACK")
+      throw err
+    } finally {
+      client.release()
+    }
+  }
+
   async addMemoLine(entryId: string, text: string): Promise<Entry | undefined> {
-    const entry = await this.getEntryById(entryId)
-    if (!entry) return undefined
-    await this.pool.query(
-      `INSERT INTO memo_lines (entry_id, text, "order") VALUES ($1, $2, $3)`,
-      [entryId, text, entry.memos.length]
-    )
-    await this.pool.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
+    const inserted = await this.withEntryLock(entryId, async (client) => {
+      const { rowCount } = await client.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
+      if (rowCount === 0) return false
+      const { rows } = await client.query(`SELECT COUNT(*)::int AS count FROM memo_lines WHERE entry_id = $1`, [
+        entryId,
+      ])
+      await client.query(`INSERT INTO memo_lines (entry_id, text, "order") VALUES ($1, $2, $3)`, [
+        entryId,
+        text,
+        rows[0].count,
+      ])
+      return true
+    })
+    if (!inserted) return undefined
     return this.getEntryById(entryId)
   }
 
@@ -138,15 +165,22 @@ export class PgEntryRepository implements EntryRepository {
   }
 
   async addStage(entryId: string, params: { label: string; date: string | null }): Promise<Entry | undefined> {
-    const entry = await this.getEntryById(entryId)
-    if (!entry) return undefined
-    const endStage = entry.stages[entry.stages.length - 1]
-    await this.pool.query(`UPDATE progress_stages SET "order" = "order" + 1 WHERE id = $1`, [endStage.id])
-    await this.pool.query(
-      `INSERT INTO progress_stages (entry_id, label, date, "order", done) VALUES ($1, $2, $3, $4, false)`,
-      [entryId, params.label, params.date, endStage.order]
-    )
-    await this.pool.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
+    const inserted = await this.withEntryLock(entryId, async (client) => {
+      const { rows } = await client.query(
+        `SELECT id, "order" FROM progress_stages WHERE entry_id = $1 ORDER BY "order" DESC LIMIT 1`,
+        [entryId]
+      )
+      if (rows.length === 0) return false
+      const endStage = rows[0]
+      await client.query(`UPDATE progress_stages SET "order" = "order" + 1 WHERE id = $1`, [endStage.id])
+      await client.query(
+        `INSERT INTO progress_stages (entry_id, label, date, "order", done) VALUES ($1, $2, $3, $4, false)`,
+        [entryId, params.label, params.date, endStage.order]
+      )
+      await client.query(`UPDATE entries SET updated_at = now() WHERE id = $1`, [entryId])
+      return true
+    })
+    if (!inserted) return undefined
     return this.getEntryById(entryId)
   }
 

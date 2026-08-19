@@ -1,4 +1,10 @@
 .plan-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.plan-page-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1.5rem;
@@ -6,7 +12,7 @@
 }
 
 @media (max-width: 720px) {
-  .plan-page {
+  .plan-page-grid {
     grid-template-columns: 1fr;
   }
 }

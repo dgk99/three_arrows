@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { useContentTranslation } from "../contexts/ContentTranslationContext"
 import type { ProgressStage } from "../types/entry"
 import "./ProgressTimeline.css"
 
@@ -14,9 +15,15 @@ interface Props {
 
 export function ProgressTimeline({ stages, onToggleDone, onUpdateStage, onDeleteStage, onAddStage }: Props) {
   const { t, i18n } = useTranslation()
+  const { translate, requestTexts } = useContentTranslation()
   const [showAddForm, setShowAddForm] = useState(false)
   const [newLabel, setNewLabel] = useState("")
   const [newDate, setNewDate] = useState("")
+
+  useEffect(() => {
+    requestTexts(stages.filter((s) => !s.isDefault).map((s) => s.label))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stages, i18n.language])
 
   function handleAddSubmit(e: FormEvent) {
     e.preventDefault()
@@ -35,7 +42,7 @@ export function ProgressTimeline({ stages, onToggleDone, onUpdateStage, onDelete
         const isDone = isFirst || stage.done
         const displayLabel = stage.isDefault
           ? t(isFirst ? "progress.defaultStart" : "progress.defaultEnd")
-          : stage.label
+          : translate(stage.label)
         return (
           <div key={stage.id} className="stage-row">
             {!isFirst && (
@@ -54,7 +61,7 @@ export function ProgressTimeline({ stages, onToggleDone, onUpdateStage, onDelete
                 {isDone && "✓"}
               </button>
               <input
-                key={`${stage.id}-${i18n.language}`}
+                key={`${stage.id}-${i18n.language}-${displayLabel}`}
                 className="stage-label"
                 defaultValue={displayLabel}
                 onBlur={(e) => e.target.value !== displayLabel && onUpdateStage(stage.id, { label: e.target.value })}

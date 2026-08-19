@@ -54,3 +54,15 @@ CREATE TABLE IF NOT EXISTS attachments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_attachments_entry_id ON attachments (entry_id);
+
+-- Cache of AI-translated user content (entry titles, memo text, custom stage
+-- labels), keyed by the exact source text + target UI language, so the same
+-- phrase is only ever translated once.
+CREATE TABLE IF NOT EXISTS translations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  source_text TEXT NOT NULL,
+  target_language TEXT NOT NULL,
+  translated_text TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (source_text, target_language)
+);
