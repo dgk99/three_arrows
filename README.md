@@ -20,7 +20,7 @@
 
 ### 스크린샷 | スクリーンショット
 
-| 체크리스트 (캘린더 + AI 비서) チェックリスト (カレンダー + AIアシスタント) | 플랜 プラン | 상세 패널 詳細パネル  |
+| 체크리스트 (캘린더 + AI 비서)<br>チェックリスト (カレンダー + AIアシスタント) | 플랜<br>プラン | 상세 패널<br>詳細パネル |
 | --- | --- | --- |
 | <img src="screenshots/checklist.png" width="280" alt="체크리스트 화면"/> | <img src="screenshots/plan.png" width="280" alt="플랜 화면"/> | <img src="screenshots/detail.png" width="280" alt="상세 패널"/> |
 
