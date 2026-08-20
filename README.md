@@ -18,17 +18,11 @@
 
 チームで開発していますが、実際の使い方は個人用です。タスクを他人に割り当てたり共有したりする機能はなく、データ構造・画面は1人のユーザーを前提に設計されています。
 
-### 스크린샷
+### 스크린샷 | スクリーンショット
 
-| 체크리스트 (캘린더 + AI 비서) | 플랜 | 상세 패널 |
+| 체크리스트 (캘린더 + AI 비서) チェックリスト (カレンダー + AIアシスタント) | 플랜 プラン | 상세 패널 詳細パネル  |
 | --- | --- | --- |
 | <img src="screenshots/checklist.png" width="280" alt="체크리스트 화면"/> | <img src="screenshots/plan.png" width="280" alt="플랜 화면"/> | <img src="screenshots/detail.png" width="280" alt="상세 패널"/> |
-
-### スクリーンショット
-
-| チェックリスト (カレンダー + AIアシスタント) | プラン | 詳細パネル |
-| --- | --- | --- |
-| <img src="screenshots/checklist.png" width="280" alt="チェックリスト画面"/> | <img src="screenshots/plan.png" width="280" alt="プラン画面"/> | <img src="screenshots/detail.png" width="280" alt="詳細パネル"/> |
 
 ### 데모 (AI 비서 · 실시간 번역) | デモ (AIアシスタント・リアルタイム翻訳)
 
